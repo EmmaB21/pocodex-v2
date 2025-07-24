@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Card {
+  id          String     @id // Identifiant unique
+  localId     String // Identifiant local (ex : "136")
+  name        String // Nom de la carte
+  image       String? // URL de l'image de la carte
+  category    String // Catégorie : Pokemon, Trainer, Energy
+  rarity      String? // Rareté
+  hp          Int? // Points de vie (pour Pokémon)
+  types       CardType[] // Types (ex : ["Colorless"])
+  evolveFrom  String? // Nom du Pokémon précédent dans l'évolution
+  evolveTo    String     @default("[]") // Liste des évolutions possibles, Stocké sous forme de JSON
+  stage       String? // Stade d'évolution (Base, Stage1, Stage2)
+  suffix      String?      // Champ pour le suffix (ex : "V")
+  description String? // Description (Pokémon uniquement)
+  attacks     Attack[] // Liste des attaques (Pokémon uniquement)
+  abilities   Ability[]    // Liste des abilities (Pokémon uniquement)
+  weaknesses  Weakness[] // Liste des faiblesses
+  resistances Resistance[] // Liste des résistances
+  retreat     Int? //Points de retraite (pour Pokémon)
+  variants    String     @default("[]") // Stocké sous forme de JSON
+  set         SetBrief   @relation(fields: [setId], references: [id], onDelete: Restrict)
+  setId       String // Référence vers le set
+  trainerType String? // Type de dresseur (pour Trainer)
+  effect      String? // Effet (Trainer ou Energy)
+  energyType  String? // Type d'énergie (Basic, Special)
+  createdAt   DateTime   @default(now()) // Date d'ajout
+  quantity    Int        @default(1) // Quantité de cette carte
+}
+
+model CardType {
+  id     Int    @id @default(autoincrement())
+  type   String
+  cardId String
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
+
+model Attack {
+  id     Int     @id @default(autoincrement()) // ID auto-généré
+  name   String // Nom de l'attaque
+  cost   String  @default("[]") // Types d'énergies nécessaires, Stocké sous forme de JSON
+  effect String? // Effet de l'attaque
+  damage Int? // Dégâts infligés
+  cardId String // Référence à la carte associée
+  card   Card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
+
+model Ability {
+  id     Int    @id @default(autoincrement())
+  type   String // Type de l'ability, par exemple "Talent"
+  name   String // Nom de l'ability
+  effect String? // Effet de l'ability (optionnel)
+  cardId String  // Référence à la carte associée
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
+
+model Weakness {
+  id     Int    @id @default(autoincrement()) // Identifiant unique
+  type   String // Type de faiblesse (ex : "Métal")
+  value  String // Valeur de la faiblesse (ex : "×2")
+  cardId String // Référence à la carte associée
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
+
+model Resistance {
+  id     Int    @id @default(autoincrement()) // Identifiant unique
+  type   String // Type de résistance (ex : "Métal")
+  value  String // Valeur de la résistance (ex : "-20")
+  cardId String // Référence à la carte associée
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
+
+model SetBrief {
+  id        String  @id // Identifiant unique du set
+  name      String // Nom du set
+  logo      String? // URL du logo du set
+  symbol    String? // URL du symbole du set
+  cardTotal Int? // Nombre total de cartes
+  cards     Card[] // Relation inverse vers les cartes associées
+}
