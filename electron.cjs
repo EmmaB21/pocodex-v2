@@ -59,8 +59,7 @@ async function createWindow() {
   }
 
   const win = new BrowserWindow({
-    width: 1600,
-    height: 1200,
+    fullscreen: true,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false
