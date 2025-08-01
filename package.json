@@ -1,6 +1,8 @@
 {
   "name": "pocodex",
   "version": "0.1.0",
+  "description": "Application de gestion de cartes Pokémon",
+  "author": "Emmanuelle Bertrand",
   "homepage": "./",
   "config": {
     "forge": "./forge.config.mjs"
